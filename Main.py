@@ -2,6 +2,10 @@ from Graph import Graph
 
 g = Graph()
 g.ler("fln_pequena.net")
+# g.show_graph()
+# g.busca_largura(8, 1)
+#     print(v.relationships)
+# print(g.vertices)
 user_input = -1
 while user_input != 0:
     print("Qual operação você deseja realizar:")
