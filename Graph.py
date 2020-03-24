@@ -1,5 +1,5 @@
 from Vertex import Vertex
-
+from VertexAnalysed import VertexAnalysed
 class Graph:
 
     def __init__(self):
@@ -95,47 +95,58 @@ class Graph:
                 break
         return vertex
 
-    def x_debug(self,vertex, number_visiteds, queue):
-        print("Analisando: "+str(vertex.number))
-        print("Visitados:", end="")
-        print(number_visiteds)
-        print("Fila:", end="")
-        print("[",end="")
-        for u in queue:
-            print(str(u.number)+",", end="")
-        print("]")
-        print()
+    # def busca_largura(self, inicio, buscado, queue = [], vertex = None, numbers_visiteds = [], vertex_visiteds = {}, level = 0):
+    #     if vertex == None:
+    #         vertex = self.search_start_vertex_by_number(inicio)
+    #         # searched = VertexAnalysed(vertex, 0)
+    #
+    #     # result[] = vertex.number
+    #     self.x_debug(vertex, numbers_visiteds, queue)
+    #     vertex_visiteds[level] = vertex
+    #     if vertex.number == buscado:
+    #         print(vertex_visiteds)
+    #         return vertex_visiteds
+    #     else:
+    #         if searched.vertex.number not in numbers_visiteds:
+    #             numbers_visiteds.append(vertex.number)
+    #         for r in vertex.relationships:
+    #             if r.destinationVertex.number not in numbers_visiteds:
+    #                 queue.append(r.destinationVertex)
+    #                 numbers_visiteds.append(r.destinationVertex.number)
+    #     next_vertex = queue.pop(0)
+    #     self.busca_largura(inicio, buscado, queue, next_vertex, numbers_visiteds, vertex_visiteds)
 
-    def busca_largura(self, inicio, buscado, queue = [], vertex = None, number_visiteds = []):
-        if vertex == None:
-            vertex = self.search_start_vertex_by_number(inicio)
+    def busca_largura(self, start_number, number_searched):
+        queue = []
+        visited = []
+        result_search = {}
 
-        self.x_debug(vertex, number_visiteds, queue)
-        # result[] = vertex.number
-        if vertex.number == buscado:
-            return "Encontrou"
-        else:
-            if vertex.number not in number_visiteds:
-                number_visiteds.append(vertex.number)
-            for r in vertex.relationships:
-                if r.destinationVertex.number not in number_visiteds:
-                    queue.append(r.destinationVertex)
-                    number_visiteds.append(r.destinationVertex.number)
-        next_vertex = queue.pop(0)
-        self.busca_largura(inicio, buscado, queue, next_vertex, number_visiteds)
+        start_vertex = self.search_start_vertex_by_number(start_number)
+        first_item_analysed = VertexAnalysed(start_vertex, 0)
+        queue.append(first_item_analysed)
 
-    def busca_largura_2(self, inicio, buscado):
-        fila = []
-        distancia_inicial = 0
-        visitados = []
+        while queue: # enquanto a fila nao estiver vazia...
+            current_item_analysed = queue.pop(0)
 
-        vertice_inicial = self.search_start_vertex_by_number(inicio)
-        fila.append(vertice_inicial)
-        while fila: # enquanto a nao estiver vazio...
-            u = fila.pop(0)
-            for r in u.relationships:
-                if not r.foiVisitado:
-                    r.foiVisitado = true
-                    nova_distancia = distancia_antiga+1
-                    visitados.append(r)
-                    fila.append(r.destinationVertex)
+            if current_item_analysed.level not in result_search:
+                result_search[current_item_analysed.level] = []
+
+            result_search[current_item_analysed.level].append(current_item_analysed.vertex.number)
+
+            if current_item_analysed.vertex.number != number_searched:
+                visited.append(current_item_analysed.vertex.number)
+                for relation in current_item_analysed.vertex.relationships:
+                    relation_vertex = relation.destinationVertex
+
+                    if relation_vertex.number not in visited:
+                        visited.append(relation_vertex.number)
+                        queue.append(VertexAnalysed(relation_vertex,current_item_analysed.level+1))
+            else:
+                return result_search
+
+    def show_result_busca_largura(self, result_search):
+        for key in result_search:
+            print(key, end=": ")
+            for value in result_search[key]:
+                print(value, end=", ")
+            print()
