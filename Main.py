@@ -25,24 +25,25 @@ def mostrarGrafo():
 
 # lista com funcoes que serao execudatas
 acoes = [
-    mostrarGrafo,
-    mostrarQtdVertices,
-    mostrarQtdArestas,
-    buscaLargura
+    {"texto": "Mostrar grafo", "funcao": mostrarGrafo},
+    {"texto": "Ver a quantidade de Vertices", "funcao": mostrarQtdVertices},
+    {"texto": "Ver a quantidade de Arestas", "funcao": mostrarQtdArestas},
+    {"texto": "Realizar busca em largura", "funcao": buscaLargura}
 ]
 
 user_input = -1
 while user_input != 0:
     print("Qual operação você deseja realizar:")
-    print("1 - Mostrar grafo")
-    print("2 - Ver a quantidade de Vertices")
-    print("3 - Ver a quantidade de Arestas")
-    print("4 - Realizar busca em largura")
+    index = 1
+    for a in acoes:
+        print(str(index) +" - " +a["texto"])
+        index += 1
     print("0 - Finalizar o algoritmo")
+
     try:
         user_input = int(input("Digite a opção desejada:"))
         if user_input > 0 and user_input <= len(acoes):
-            acoes[user_input - 1]()
+            acoes[user_input - 1]["funcao"]()
             print()
         else:
             user_input = 0
@@ -51,7 +52,6 @@ while user_input != 0:
         print("Você não digitou uma opção válida")
         print()
         continue
-
-
+# fim while
 print()
 print("Algoritmo finalizado")
