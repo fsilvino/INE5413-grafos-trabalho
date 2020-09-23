@@ -1,18 +1,21 @@
 from Vertex import Vertex
 from VertexAnalysed import VertexAnalysed
+from queue import Queue
+
 class Graph:
 
     def __init__(self):
         self.vertices = []
         self.numOfVertices = 0
         self.numOfEdges = 0
+        self.loaded = False
 
     def show_graph(self):
         for v in self.vertices:
-            print(str(v.number)+": ", end="")
-            for r in v.relationships:
-                print(str(r.destinationVertex.number)+", ", end="")
-            print()
+            print(str(v.number) + ": " + ", ".join(map(lambda x: str(x.number), v.relationships)))
+
+    def isLoaded(self):
+        return self.loaded
 
     def ler(self, arquivo):
         f = open(arquivo, "r", encoding='utf-8')
@@ -20,6 +23,7 @@ class Graph:
         f.close()
         self.loadVertices(lines)
         self.loadRelationships(lines)
+        self.fileLoaded = True
 
 
     def loadVertices(self, lines):
@@ -150,3 +154,55 @@ class Graph:
             for value in result_search[key]:
                 print(value, end=", ")
             print()
+
+    
+    # Este método foi implementado seguindo o pseudocódigo disponibilizado nas anotações da disciplina.
+    # Mesmo não utilizando a estrutura de ancestrais para efeitos práticos, a mesma foi adicionada para uma implementação completa do exemplo
+    def realizarBuscaEmLargura(self, s):
+        # utiliza o número de vértices para inicializar os itens dos arrays com os valores default
+        numVertices = self.qtdVertices()
+        visitados = [False] * numVertices
+        custos = [float("inf")] * numVertices
+        ancestrais = [None] * numVertices
+
+        # define os valores para o vértice inicial
+        visitados[s - 1] = True
+        custos[s - 1] = 0
+
+        # estrutura de dados utilizada para a impressão do resultado conforme requisito do trabalho
+        resultado = [[s]]
+
+        # inicializa a fila que é utilizada para a busca em largura, adicionando o índice do array que guarda os vértices no grafo
+        fila = Queue()
+        fila.put(s - 1)
+
+        while not fila.empty():
+            u = fila.get()
+
+            # o método vizinhos() recebe o número do vértice, portando precisa somar 1 ao índice do array
+            for verticeDestino in self.vizinhos(u + 1):
+
+                # passa por cada vizinho e verifica se o mesmo ainda não foi visitado
+                v = verticeDestino.number - 1
+                if not visitados[v]:
+                    
+                    # marca o vizinho como visitado, calcula seu custo e seta seu ancestral
+                    visitados[v] = True
+                    custo = custos[u] + 1
+                    custos[v] = custo
+                    ancestrais[v] = u
+
+                    # atualiza a estrutura de dados do resultado para impressão do mesmo posteriormente
+                    if custo >= len(resultado):
+                        resultado.append([])
+                    resultado[custo].append(v + 1)
+
+                    # adiciona o vértice na fila para visitar seus vizinhos
+                    fila.put(v)
+
+        return resultado
+
+    # Apenas mostra o resultado no console conforme requisito do trabalho, recebendo o resultado obtido com o método realizarBuscaEmLargura()
+    def mostrarResultadoBuscaEmLargura(self, resultado):
+        for nivel, vertices in enumerate(resultado):
+            print(str(nivel) + ": " + ",".join(map(str, vertices)))
