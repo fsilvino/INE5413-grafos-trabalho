@@ -1,6 +1,7 @@
 from Vertex import Vertex
 from VertexAnalysed import VertexAnalysed
 from queue import Queue
+from random import randint
 
 class Graph:
 
@@ -9,6 +10,8 @@ class Graph:
         self.numOfVertices = 0
         self.numOfEdges = 0
         self.loaded = False
+        #RETIRAR ANTES DE ENTRAGAR TRABALHO
+        self.ler("fln_pequena.net")
 
     def show_graph(self):
         for v in self.vertices:
@@ -91,71 +94,6 @@ class Graph:
 
         return float("inf")
 
-    def search_start_vertex_by_number(self, number):
-        vertex = None
-        for v in self.vertices:
-            if number == v.number:
-                vertex = v
-                break
-        return vertex
-
-    # def busca_largura(self, inicio, buscado, queue = [], vertex = None, numbers_visiteds = [], vertex_visiteds = {}, level = 0):
-    #     if vertex == None:
-    #         vertex = self.search_start_vertex_by_number(inicio)
-    #         # searched = VertexAnalysed(vertex, 0)
-    #
-    #     # result[] = vertex.number
-    #     self.x_debug(vertex, numbers_visiteds, queue)
-    #     vertex_visiteds[level] = vertex
-    #     if vertex.number == buscado:
-    #         print(vertex_visiteds)
-    #         return vertex_visiteds
-    #     else:
-    #         if searched.vertex.number not in numbers_visiteds:
-    #             numbers_visiteds.append(vertex.number)
-    #         for r in vertex.relationships:
-    #             if r.destinationVertex.number not in numbers_visiteds:
-    #                 queue.append(r.destinationVertex)
-    #                 numbers_visiteds.append(r.destinationVertex.number)
-    #     next_vertex = queue.pop(0)
-    #     self.busca_largura(inicio, buscado, queue, next_vertex, numbers_visiteds, vertex_visiteds)
-
-    def busca_largura(self, start_number, number_searched):
-        queue = []
-        visited = []
-        result_search = {}
-
-        start_vertex = self.search_start_vertex_by_number(start_number)
-        first_item_analysed = VertexAnalysed(start_vertex, 0)
-        queue.append(first_item_analysed)
-
-        while queue: # enquanto a fila nao estiver vazia...
-            current_item_analysed = queue.pop(0)
-
-            if current_item_analysed.level not in result_search:
-                result_search[current_item_analysed.level] = []
-
-            result_search[current_item_analysed.level].append(current_item_analysed.vertex.number)
-
-            if current_item_analysed.vertex.number != number_searched:
-                visited.append(current_item_analysed.vertex.number)
-                for relation in current_item_analysed.vertex.relationships:
-                    relation_vertex = relation.destinationVertex
-
-                    if relation_vertex.number not in visited:
-                        visited.append(relation_vertex.number)
-                        queue.append(VertexAnalysed(relation_vertex,current_item_analysed.level+1))
-            else:
-                return result_search
-
-    def show_result_busca_largura(self, result_search):
-        for key in result_search:
-            print(key, end=": ")
-            for value in result_search[key]:
-                print(value, end=", ")
-            print()
-
-    
     # Este método foi implementado seguindo o pseudocódigo disponibilizado nas anotações da disciplina.
     # Mesmo não utilizando a estrutura de ancestrais para efeitos práticos, a mesma foi adicionada para uma implementação completa do exemplo
     def realizarBuscaEmLargura(self, s):
@@ -185,7 +123,7 @@ class Graph:
                 # passa por cada vizinho e verifica se o mesmo ainda não foi visitado
                 v = verticeDestino.number - 1
                 if not visitados[v]:
-                    
+
                     # marca o vizinho como visitado, calcula seu custo e seta seu ancestral
                     visitados[v] = True
                     custo = custos[u] + 1
@@ -206,3 +144,19 @@ class Graph:
     def mostrarResultadoBuscaEmLargura(self, resultado):
         for nivel, vertices in enumerate(resultado):
             print(str(nivel) + ": " + ",".join(map(str, vertices)))
+
+    # Procura de ciclos eulerianos utilizando algoritmo de Hierholzer
+    def procuraCicloEuleriano(self):
+        arestasVisitadas = [False] * self.qtdArestas()
+        # posicao inicial escolhida arbitrariamente
+        posicaoInicial = randint(0, self.qtdVertices()-1)
+        verticeInicial = self.vertices[posicaoInicial]
+        ciclo = []
+
+        self.buscaSubcicloEuleriano(self.graph, verticeInicial, ciclo)
+
+        return posicaoInicial
+
+    def buscaSubcicloEuleriano(self, grafo, vertice, ciclo):
+        ciclo[] = v
+        t =v
