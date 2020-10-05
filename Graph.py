@@ -53,8 +53,9 @@ class Graph:
             if (len(values) >= 3):
                 weight = float(values[2])
 
-            originVertex.addRelationship(destinationVertex, weight)
-            destinationVertex.addRelationship(originVertex, weight)
+            # nesse caso, self.numOfEdges esta sendo usado como identificador unico do relacionamento
+            originVertex.addRelationship(destinationVertex, weight, self.numOfEdges)
+            destinationVertex.addRelationship(originVertex, weight, self.numOfEdges)
 
             self.numOfEdges = self.numOfEdges + 1
 
