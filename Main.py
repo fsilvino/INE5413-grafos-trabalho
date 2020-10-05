@@ -83,6 +83,7 @@ while user_input != 0:
     print()
 
     user_input = solicitarOpcao("Digite a opção desejada: ", 0, len(acoes))
+    print()
     if user_input > 0:
         acoes[user_input - 1]["funcao"]()
         print()

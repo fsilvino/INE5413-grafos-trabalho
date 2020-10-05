@@ -12,7 +12,7 @@ class Graph:
         self.numOfEdges = 0
         self.loaded = False
         #RETIRAR ANTES DE ENTRAGAR TRABALHO
-        self.ler("fln_pequena.net")
+        self.ler("fln_pequena_ciclo.net")
 
     def show_graph(self):
         for v in self.vertices:
@@ -149,16 +149,16 @@ class Graph:
 
     # Procura de ciclos eulerianos utilizando algoritmo de Hierholzer
     def procuraCicloEuleriano(self):
-        # arestasVisitadas = [False] * self.qtdArestas()
+        arestasVisitadas = [False] * self.qtdArestas()
         # posicao inicial escolhida arbitrariamente
-        posicaoInicial = random.randint(0, self.qtdVertices()-1)
-        # posicaoInicial = 5
+        # posicaoInicial = random.randint(0, self.qtdVertices()-1)
+        posicaoInicial = 6
         verticeInicial = self.vertices[posicaoInicial]
-        ciclo = []
+
         print("Vertice inicial:", end="")
         print(verticeInicial.number)
 
-        x = self.buscaSubcicloEuleriano(verticeInicial, ciclo)
+        x = self.buscaSubcicloEuleriano(verticeInicial, arestasVisitadas)
 
         if x is not None:
             for i in x:
@@ -170,8 +170,7 @@ class Graph:
         print("")
         return None
 
-    def buscaSubcicloEuleriano(self, v, ciclo):
-        arestasVisitadas = [False] * self.qtdArestas()
+    def buscaSubcicloEuleriano(self, v, arestasVisitadas):
         ciclo = []
         ciclo.append(v)
         t =v # variavel t serve como comparativo para saber se um ciclo foi fechado ou nao
@@ -179,19 +178,18 @@ class Graph:
         busca = True
         while(busca):
             if False not in arestasVisitadas:
-            # if False not in arestasVisitadas[v.number-1 :: len(v.relationships)]:
-                # retorna nulo
                 return None
             else:
                 # array com vertices que tem relacao com o vertice atual, ou seja, que tem arestas relacionadas
                 listaVerticesDestino = list(v.relationships.keys())
 
                 # escolher chave que nao foi visitada
-                keysArestasNaoVisitadas = self.buscaArestaNaoVistada(listaVerticesDestino, arestasVisitadas, v)
+                keysArestasNaoVisitadas = self.buscaArestasNaoVistadas(listaVerticesDestino, arestasVisitadas, v)
 
-                if not keysArestasNaoVisitadas: #se x estiver vazio...
-                    print("O ciclo nao foi encontrado. Retornando parte do ciclo encontrada")
-                    return ciclo
+                #se keysArestasNaoVisitadas estiver vazio significa que todas as arestas do vertice foram visitadas
+                # se todas as arestas foram visitadas, e nao fechou o ciclo, o algoritmo nao tem para onde ir
+                if not keysArestasNaoVisitadas:
+                    return None
                 else:
                     randomKey = random.choice(keysArestasNaoVisitadas)
                     verticeDestinoKey = listaVerticesDestino[randomKey] # verticeDestinoKey eh do tipo Vertex
@@ -205,9 +203,25 @@ class Graph:
                 ciclo.append(u.destinationVertex)
             if(v == t):
                 busca = False
+        # fim while
+
+        # para vertice no ciclo, verificar se existe aresta nao vistitada
+        i = 0
+        for v2 in ciclo:
+            for r in v2.relationships:
+                if not arestasVisitadas[v2.relationships[r].uid]:
+                    print("Entrou aqui", end=" ")
+                    print(v2.number)
+                    ciclo2 = self.buscaSubcicloEuleriano(v2, arestasVisitadas)
+                    print(ciclo2)
+                    if ciclo2 is not None:
+                        print("Achou um sub sub ciclo", end="")
+                        print(v2.number)
+                        ciclo[i:len(ciclo2)] = ciclo2
+            i += 1
         return ciclo
 
-    def buscaArestaNaoVistada(self, listaVerticesDestino, arestasVisitadas, vertice):
+    def buscaArestasNaoVistadas(self, listaVerticesDestino, arestasVisitadas, vertice):
         keysNaoVisitadas = []
         keyNaoVistida = 0
         for verticeDestino in listaVerticesDestino:
