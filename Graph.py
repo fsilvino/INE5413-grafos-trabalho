@@ -12,7 +12,7 @@ class Graph:
         self.numOfEdges = 0
         self.loaded = False
         #RETIRAR ANTES DE ENTRAGAR TRABALHO
-        self.ler("fln_pequena_ciclo.net")
+        self.ler("fln_pequena.net")
 
     def show_graph(self):
         for v in self.vertices:
@@ -151,8 +151,8 @@ class Graph:
     def procuraCicloEuleriano(self):
         arestasVisitadas = [False] * self.qtdArestas()
         # posicao inicial escolhida arbitrariamente
-        # posicaoInicial = random.randint(0, self.qtdVertices()-1)
-        posicaoInicial = 6
+        posicaoInicial = random.randint(0, self.qtdVertices()-1)
+        # posicaoInicial = 1
         verticeInicial = self.vertices[posicaoInicial]
 
         print("Vertice inicial:", end="")
@@ -160,6 +160,8 @@ class Graph:
 
         x = self.buscaSubcicloEuleriano(verticeInicial, arestasVisitadas)
 
+        print("")
+        print("Resultado: ")
         if x is not None:
             for i in x:
                 print(i.number, end=", ")
@@ -209,15 +211,22 @@ class Graph:
         i = 0
         for v2 in ciclo:
             for r in v2.relationships:
+                # print("Passou aqui")
                 if not arestasVisitadas[v2.relationships[r].uid]:
-                    print("Entrou aqui", end=" ")
-                    print(v2.number)
                     ciclo2 = self.buscaSubcicloEuleriano(v2, arestasVisitadas)
-                    print(ciclo2)
                     if ciclo2 is not None:
                         print("Achou um sub sub ciclo", end="")
                         print(v2.number)
-                        ciclo[i:len(ciclo2)] = ciclo2
+                        print("Ciclo atual: ")
+                        for x in ciclo:
+                            print(x.number, end=", ")
+                        print("")
+                        print("Posicao: ", end="")
+                        print(i)
+                        for x in ciclo2:
+                            print(x.number, end=", ")
+                        print("")
+                        ciclo[i:i+1] = ciclo2
             i += 1
         return ciclo
 
