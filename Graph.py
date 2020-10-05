@@ -1,7 +1,8 @@
 from Vertex import Vertex
 from VertexAnalysed import VertexAnalysed
 from queue import Queue
-from random import randint
+# from random import randint
+import random
 
 class Graph:
 
@@ -148,16 +149,50 @@ class Graph:
 
     # Procura de ciclos eulerianos utilizando algoritmo de Hierholzer
     def procuraCicloEuleriano(self):
-        arestasVisitadas = [False] * self.qtdArestas()
+        # arestasVisitadas = [False] * self.qtdArestas()
         # posicao inicial escolhida arbitrariamente
-        posicaoInicial = randint(0, self.qtdVertices()-1)
+        posicaoInicial = random.randint(0, self.qtdVertices()-1)
         verticeInicial = self.vertices[posicaoInicial]
         ciclo = []
 
-        self.buscaSubcicloEuleriano(self.graph, verticeInicial, ciclo)
+        x = self.buscaSubcicloEuleriano(verticeInicial, ciclo)
 
-        return posicaoInicial
+        print("Vertice inicial:", end="")
+        print(verticeInicial.number)
+        if x is not None:
+            print("Achou ciclo")
+            for i in x:
+                print(i.number, end=", ")
+        else:
+            print("Retornou nulo")
+        print("")
+        print("Acabou de listar o ciclo")
+        print("")
+        return None
 
-    def buscaSubcicloEuleriano(self, grafo, vertice, ciclo):
-        ciclo[] = v
-        t =v
+    def buscaSubcicloEuleriano(self, v, ciclo):
+        arestasVisitadas = [False] * self.qtdArestas()
+        ciclo = []
+        ciclo.append(v)
+        t =v # variavel t serve como comparativo para saber se um ciclo foi fechado ou nao
+        # procurar maneira de fazer do/while
+        busca = True
+        while(busca):
+            if False not in arestasVisitadas:
+            # if False not in arestasVisitadas[v.number-1 :: len(v.relationships)]:
+                # retorna nulo
+                return None
+            else:
+                keysRelationsList = list(v.relationships.keys())
+                randomKey = random.randint(0, len(keysRelationsList)-1)
+                key = keysRelationsList[randomKey] # key eh do tipo Vertex
+                u = v.relationships[key]
+                # marca aresta como vistitada
+                arestasVisitadas[u.uid] = True
+                #v recebe vertice da outra ponta da aresta
+                v= u.destinationVertex
+                # ciclo recebe novo vertice
+                ciclo.append(u.destinationVertex)
+            if(v == t):
+                busca = False
+        return ciclo
