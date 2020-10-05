@@ -152,15 +152,15 @@ class Graph:
         # arestasVisitadas = [False] * self.qtdArestas()
         # posicao inicial escolhida arbitrariamente
         posicaoInicial = random.randint(0, self.qtdVertices()-1)
+        # posicaoInicial = 5
         verticeInicial = self.vertices[posicaoInicial]
         ciclo = []
+        print("Vertice inicial:", end="")
+        print(verticeInicial.number)
 
         x = self.buscaSubcicloEuleriano(verticeInicial, ciclo)
 
-        print("Vertice inicial:", end="")
-        print(verticeInicial.number)
         if x is not None:
-            print("Achou ciclo")
             for i in x:
                 print(i.number, end=", ")
         else:
@@ -183,10 +183,20 @@ class Graph:
                 # retorna nulo
                 return None
             else:
-                keysRelationsList = list(v.relationships.keys())
-                randomKey = random.randint(0, len(keysRelationsList)-1)
-                key = keysRelationsList[randomKey] # key eh do tipo Vertex
-                u = v.relationships[key]
+                # array com vertices que tem relacao com o vertice atual, ou seja, que tem arestas relacionadas
+                listaVerticesDestino = list(v.relationships.keys())
+
+                # escolher chave que nao foi visitada
+                keysArestasNaoVisitadas = self.buscaArestaNaoVistada(listaVerticesDestino, arestasVisitadas, v)
+
+                if not keysArestasNaoVisitadas: #se x estiver vazio...
+                    print("O ciclo nao foi encontrado. Retornando parte do ciclo encontrada")
+                    return ciclo
+                else:
+                    randomKey = random.choice(keysArestasNaoVisitadas)
+                    verticeDestinoKey = listaVerticesDestino[randomKey] # verticeDestinoKey eh do tipo Vertex
+
+                u = v.relationships[verticeDestinoKey] #proxima aresta a ser visitada
                 # marca aresta como vistitada
                 arestasVisitadas[u.uid] = True
                 #v recebe vertice da outra ponta da aresta
@@ -196,3 +206,12 @@ class Graph:
             if(v == t):
                 busca = False
         return ciclo
+
+    def buscaArestaNaoVistada(self, listaVerticesDestino, arestasVisitadas, vertice):
+        keysNaoVisitadas = []
+        keyNaoVistida = 0
+        for verticeDestino in listaVerticesDestino:
+            if not arestasVisitadas[vertice.relationships[verticeDestino].uid]:
+                keysNaoVisitadas.append(keyNaoVistida)
+            keyNaoVistida = keyNaoVistida+1
+        return keysNaoVisitadas
