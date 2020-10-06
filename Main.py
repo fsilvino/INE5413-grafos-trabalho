@@ -68,6 +68,9 @@ def buscaCicloEuleriano():
         print(ex)
     # print(result)
 
+def floydWarshall():
+    matriz = g.criaMatrizAdjacenciaFloydWarshall()
+    print(matriz)
 # lista com funcoes que serao executadas
 acoes = [
     {"texto": "Carregar um arquivo", "funcao": carregarArquivo},
@@ -75,7 +78,8 @@ acoes = [
     {"texto": "Ver a quantidade de Vértices", "funcao": mostrarQtdVertices},
     {"texto": "Ver a quantidade de Arestas", "funcao": mostrarQtdArestas},
     {"texto": "Realizar busca em largura", "funcao": buscaLargura},
-    {"texto": "Procurar ciclo euleriano", "funcao": buscaCicloEuleriano}
+    {"texto": "Procurar ciclo euleriano", "funcao": buscaCicloEuleriano},
+    {"texto": "Floyd Warshall", "funcao": floydWarshall}
 ]
 
 user_input = -1

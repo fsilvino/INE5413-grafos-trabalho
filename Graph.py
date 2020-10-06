@@ -11,7 +11,7 @@ class Graph:
         self.numOfEdges = 0
         self.loaded = False
         #RETIRAR ANTES DE ENTRAGAR TRABALHO
-        self.ler("fln_pequena.net")
+        self.ler("fln_pequena_ciclo_fechado.net")
 
     def show_graph(self):
         for v in self.vertices:
@@ -243,5 +243,18 @@ class Graph:
             print("0")
 
 
-    def x(self):
-        pass
+    # matriz de adjacencia Floyd-Warshal
+    # para para cruzamento de mesmo vertice, colocar zero, para vertices que nao estao ligados, colocar infinito
+    def criaMatrizAdjacenciaFloydWarshall(self):
+        # matriz = [[0] * * self.qtdVertices()] * self.qtdVertices() # Nao funciona bem. Arrays internos funcionam como objeto, sempre todos sao alterados
+        matriz = [0] * self.qtdVertices()
+        # matriz[0][0] = 78
+        # matriz = []
+        i = 0
+        for vertice in self.vertices:
+            matriz[i] = [float("inf")] * self.qtdVertices()
+            matriz[i][i] = float(0)
+            for verticeDestino in vertice.relationships:
+                matriz[vertice.number- 1][verticeDestino.number -1 ] =  vertice.relationships[verticeDestino].weight
+            i += 1
+        return matriz
