@@ -1,5 +1,4 @@
 from Vertex import Vertex
-from VertexAnalysed import VertexAnalysed
 from queue import Queue
 # from random import randint
 import random
@@ -60,26 +59,20 @@ class Graph:
 
             self.numOfEdges = self.numOfEdges + 1
 
-
     def qtdVertices(self):
         return self.numOfVertices
-
 
     def qtdArestas(self):
         return self.numOfEdges
 
-
     def grau(self, v):
         return len(self.vertices[v-1].relationships)
-
 
     def rotulo(self, v):
         return self.vertices[v-1].label
 
-
     def vizinhos(self, v):
         return self.vertices[v-1].relationships
-
 
     def haAresta(self, u, v):
         return self.vertices[u-1].isNeighborOf(v) or self.vertices[v-1].isNeighborOf(u)
@@ -152,25 +145,24 @@ class Graph:
         arestasVisitadas = [False] * self.qtdArestas()
         # posicao inicial escolhida arbitrariamente
         posicaoInicial = random.randint(0, self.qtdVertices()-1)
-        # posicaoInicial = 1
         verticeInicial = self.vertices[posicaoInicial]
 
-        print("Vertice inicial:", end="")
-        print(verticeInicial.number)
+        # print("Vertice inicial:", end="")
+        # print(verticeInicial.number)
 
-        x = self.buscaSubcicloEuleriano(verticeInicial, arestasVisitadas)
-
-        print("")
-        print("Resultado: ")
-        if x is not None:
-            for i in x:
-                print(i.number, end=", ")
-        else:
-            print("Retornou nulo")
-        print("")
-        print("Acabou de listar o ciclo")
-        print("")
-        return None
+        ciclo = self.buscaSubcicloEuleriano(verticeInicial, arestasVisitadas)
+        return ciclo
+        # print("")
+        # print("Resultado: ")
+        # if ciclo[0]:
+        #     for vertice in ciclo[1]:
+        #         print(vertice.number, end=", ")
+        # else:
+        #     print("Retornou nulo")
+        # print("")
+        # print("Acabou de listar o ciclo")
+        # print("")
+        # return None
 
     def buscaSubcicloEuleriano(self, v, arestasVisitadas):
         ciclo = []
@@ -180,7 +172,7 @@ class Graph:
         busca = True
         while(busca):
             if False not in arestasVisitadas:
-                return None
+                return (False, None)
             else:
                 # array com vertices que tem relacao com o vertice atual, ou seja, que tem arestas relacionadas
                 listaVerticesDestino = list(v.relationships.keys())
@@ -188,10 +180,10 @@ class Graph:
                 # escolher chave que nao foi visitada
                 keysArestasNaoVisitadas = self.buscaArestasNaoVistadas(listaVerticesDestino, arestasVisitadas, v)
 
-                #se keysArestasNaoVisitadas estiver vazio significa que todas as arestas do vertice foram visitadas
+                # se keysArestasNaoVisitadas estiver vazio significa que todas as arestas do vertice foram visitadas
                 # se todas as arestas foram visitadas, e nao fechou o ciclo, o algoritmo nao tem para onde ir
                 if not keysArestasNaoVisitadas:
-                    return None
+                    return (False, None)
                 else:
                     randomKey = random.choice(keysArestasNaoVisitadas)
                     verticeDestinoKey = listaVerticesDestino[randomKey] # verticeDestinoKey eh do tipo Vertex
@@ -203,32 +195,33 @@ class Graph:
                 v= u.destinationVertex
                 # ciclo recebe novo vertice
                 ciclo.append(u.destinationVertex)
+            # verificacao para definir fim do loop, emulando um "do while"
             if(v == t):
                 busca = False
         # fim while
 
-        # para vertice no ciclo, verificar se existe aresta nao vistitada
+        # para cada vertice no ciclo, verificar se existe aresta nao vistitada
         i = 0
-        for v2 in ciclo:
-            for r in v2.relationships:
+        for vertice in ciclo:
+            for relacao in vertice.relationships:
                 # print("Passou aqui")
-                if not arestasVisitadas[v2.relationships[r].uid]:
-                    ciclo2 = self.buscaSubcicloEuleriano(v2, arestasVisitadas)
-                    if ciclo2 is not None:
-                        print("Achou um sub sub ciclo", end="")
-                        print(v2.number)
-                        print("Ciclo atual: ")
-                        for x in ciclo:
-                            print(x.number, end=", ")
-                        print("")
-                        print("Posicao: ", end="")
-                        print(i)
-                        for x in ciclo2:
-                            print(x.number, end=", ")
-                        print("")
-                        ciclo[i:i+1] = ciclo2
+                if not arestasVisitadas[vertice.relationships[relacao].uid]:
+                    subCiclo = self.buscaSubcicloEuleriano(vertice, arestasVisitadas)
+                    if subCiclo[0]:
+                        # print("Achou um sub sub ciclo", end="")
+                        # print(vertice.number)
+                        # print("Ciclo atual: ")
+                        # for x in ciclo:
+                        #     print(x.number, end=", ")
+                        # print("")
+                        # print("Posicao: ", end="")
+                        # print(i)
+                        # for x in subCiclo[1]:
+                        #     print(x.number, end=", ")
+                        # print("")
+                        ciclo[i:i+1] = subCiclo[1]
             i += 1
-        return ciclo
+        return (True, ciclo)
 
     def buscaArestasNaoVistadas(self, listaVerticesDestino, arestasVisitadas, vertice):
         keysNaoVisitadas = []
@@ -238,3 +231,17 @@ class Graph:
                 keysNaoVisitadas.append(keyNaoVistida)
             keyNaoVistida = keyNaoVistida+1
         return keysNaoVisitadas
+
+    def mostrarResultadoBuscaCicloEuleriano(self, resultado):
+
+        if resultado[0]:
+            print("1")
+            print(", ".join(map(lambda vertice: str(vertice.number), resultado[1])))
+            # for vertice in resultado[1]:
+            #     print(vertice.number, end=", ")
+        else:
+            print("0")
+
+
+    def x(self):
+        pass

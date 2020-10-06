@@ -60,8 +60,13 @@ def mostrarGrafo():
         print(ex)
 
 def buscaCicloEuleriano():
-    result = g.procuraCicloEuleriano()
-    print(result)
+    try:
+        print("Resultado da busca por ciclo euleriano:")
+        result = g.procuraCicloEuleriano()
+        g.mostrarResultadoBuscaCicloEuleriano(result)
+    except Exception as ex:
+        print(ex)
+    # print(result)
 
 # lista com funcoes que serao executadas
 acoes = [
