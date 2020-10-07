@@ -69,7 +69,7 @@ def buscaCicloEuleriano():
     # print(result)
 
 def floydWarshall():
-    matriz = g.criaMatrizAdjacenciaFloydWarshall()
+    matriz = g.floydWarshall()
     print(matriz)
 # lista com funcoes que serao executadas
 acoes = [

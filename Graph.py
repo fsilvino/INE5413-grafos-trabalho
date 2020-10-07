@@ -2,6 +2,7 @@ from Vertex import Vertex
 from queue import Queue
 # from random import randint
 import random
+import copy
 
 class Graph:
 
@@ -257,4 +258,40 @@ class Graph:
             for verticeDestino in vertice.relationships:
                 matriz[vertice.number- 1][verticeDestino.number -1 ] =  vertice.relationships[verticeDestino].weight
             i += 1
+        return matriz
+
+    def floydWarshall(self):
+        matrizBase = self.criaMatrizAdjacenciaFloydWarshall()
+        matriz = copy.copy(matrizBase)
+        k = 1
+
+        print(len(self.vertices))
+        # print(range(0, len(self.vertices)-1))
+        # i = 0
+        # for v in self.vertices:
+        for i in range(0, len(self.vertices) - 1):
+            print("Vertice: "+str(i))
+            print("")
+            for linha in range(0, len(matriz) - 1):
+                print("linha: "+str(linha))
+            # for linha from matriz:
+                if linha != i:
+                    for coluna in range(0, len(matriz[linha]) - 1):
+                        print("coluna: "+str(coluna))
+                        print("Valor atual: "+str(matriz[linha][coluna]))
+                        print("matriz[linha][i]: "+str(matriz[linha][i]))
+                        print("matriz[i][coluna]: "+str(matriz[i][coluna]))
+                        print("Soma: "+ str(matriz[linha][i] + matriz[i][coluna]))
+                    # for coluna in linha:
+                        x = matriz[linha][i] + matriz[i][coluna]
+                        if x < matriz[linha][coluna]:
+                            print("Alterou!")
+                            matriz[linha][coluna] = x
+                        print("")
+                    #     break
+                    # break
+                print("")
+            break
+
+
         return matriz
