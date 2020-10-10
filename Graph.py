@@ -13,6 +13,7 @@ class Graph:
         self.loaded = False
         #RETIRAR ANTES DE ENTRAGAR TRABALHO
         self.ler("fln_pequena_ciclo_fechado.net")
+        # self.ler("fln_pequena_ciclo.net")
 
     def show_graph(self):
         for v in self.vertices:
@@ -153,17 +154,17 @@ class Graph:
 
         ciclo = self.buscaSubcicloEuleriano(verticeInicial, arestasVisitadas)
         return ciclo
-        # print("")
-        # print("Resultado: ")
-        # if ciclo[0]:
-        #     for vertice in ciclo[1]:
-        #         print(vertice.number, end=", ")
-        # else:
-        #     print("Retornou nulo")
-        # print("")
-        # print("Acabou de listar o ciclo")
-        # print("")
-        # return None
+        print("")
+        print("Resultado: ")
+        if ciclo[0]:
+            for vertice in ciclo[1]:
+                print(vertice.number, end=", ")
+        else:
+            print("Retornou nulo")
+        print("")
+        print("Acabou de listar o ciclo")
+        print("")
+        return None
 
     def buscaSubcicloEuleriano(self, v, arestasVisitadas):
         ciclo = []
@@ -172,22 +173,22 @@ class Graph:
         # procurar maneira de fazer do/while
         busca = True
         while(busca):
-            if False not in arestasVisitadas:
+            # if False not in arestasVisitadas:
+            #     return (False, None)
+            # else:
+            # array com vertices que tem relacao com o vertice atual, ou seja, que tem arestas relacionadas
+            listaVerticesDestino = list(v.relationships.keys())
+
+            # escolher chave que nao foi visitada
+            keysArestasNaoVisitadas = self.buscaArestasNaoVistadas(listaVerticesDestino, arestasVisitadas, v)
+
+            # se keysArestasNaoVisitadas estiver vazio significa que todas as arestas do vertice foram visitadas
+            # se todas as arestas foram visitadas, e nao fechou o ciclo, o algoritmo nao tem para onde ir
+            if not keysArestasNaoVisitadas:
                 return (False, None)
             else:
-                # array com vertices que tem relacao com o vertice atual, ou seja, que tem arestas relacionadas
-                listaVerticesDestino = list(v.relationships.keys())
-
-                # escolher chave que nao foi visitada
-                keysArestasNaoVisitadas = self.buscaArestasNaoVistadas(listaVerticesDestino, arestasVisitadas, v)
-
-                # se keysArestasNaoVisitadas estiver vazio significa que todas as arestas do vertice foram visitadas
-                # se todas as arestas foram visitadas, e nao fechou o ciclo, o algoritmo nao tem para onde ir
-                if not keysArestasNaoVisitadas:
-                    return (False, None)
-                else:
-                    randomKey = random.choice(keysArestasNaoVisitadas)
-                    verticeDestinoKey = listaVerticesDestino[randomKey] # verticeDestinoKey eh do tipo Vertex
+                randomKey = random.choice(keysArestasNaoVisitadas)
+                verticeDestinoKey = listaVerticesDestino[randomKey] # verticeDestinoKey eh do tipo Vertex
 
                 u = v.relationships[verticeDestinoKey] #proxima aresta a ser visitada
                 # marca aresta como vistitada
@@ -208,19 +209,20 @@ class Graph:
                 # print("Passou aqui")
                 if not arestasVisitadas[vertice.relationships[relacao].uid]:
                     subCiclo = self.buscaSubcicloEuleriano(vertice, arestasVisitadas)
-                    if subCiclo[0]:
-                        # print("Achou um sub sub ciclo", end="")
-                        # print(vertice.number)
-                        # print("Ciclo atual: ")
-                        # for x in ciclo:
-                        #     print(x.number, end=", ")
-                        # print("")
-                        # print("Posicao: ", end="")
-                        # print(i)
-                        # for x in subCiclo[1]:
-                        #     print(x.number, end=", ")
-                        # print("")
-                        ciclo[i:i+1] = subCiclo[1]
+                    if not subCiclo[0]:
+                        return (False,None)
+                    # print("Achou um sub sub ciclo", end="")
+                    # print(vertice.number)
+                    # print("Ciclo atual: ")
+                    # for x in ciclo:
+                    #     print(x.number, end=", ")
+                    # print("")
+                    # print("Posicao: ", end="")
+                    # print(i)
+                    # for x in subCiclo[1]:
+                    #     print(x.number, end=", ")
+                    # print("")
+                    ciclo[i:i+1] = subCiclo[1]
             i += 1
         return (True, ciclo)
 
@@ -270,13 +272,12 @@ class Graph:
         # i = 0
         # for v in self.vertices:
         for i in range(0, len(self.vertices) - 1):
-            print("Vertice: "+str(i))
-            print("")
             for linha in range(0, len(matriz) - 1):
-                print("linha: "+str(linha))
             # for linha from matriz:
                 if linha != i:
                     for coluna in range(0, len(matriz[linha]) - 1):
+                        print("Vertice: "+str(i))
+                        print("linha: "+str(linha))
                         print("coluna: "+str(coluna))
                         print("Valor atual: "+str(matriz[linha][coluna]))
                         print("matriz[linha][i]: "+str(matriz[linha][i]))
@@ -287,11 +288,12 @@ class Graph:
                         if x < matriz[linha][coluna]:
                             print("Alterou!")
                             matriz[linha][coluna] = x
+                            matriz[coluna][linha] = x
                         print("")
                     #     break
                     # break
                 print("")
-            break
+            # break
 
 
         return matriz
