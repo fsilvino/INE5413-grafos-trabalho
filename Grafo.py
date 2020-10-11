@@ -1,9 +1,7 @@
 from Vertice import Vertice
 from Aresta import Aresta
 from queue import Queue
-import numpy as np
 import random
-import copy
 from fibheap import *
 
 class Grafo:
