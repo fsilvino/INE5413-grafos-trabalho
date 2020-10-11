@@ -5,16 +5,16 @@ class Vertice:
     def __init__(self, numero, rotulo):
         self.numero = numero
         self.rotulo = rotulo
-        self.relacoes = {}
+        self.arestas = {}
 
-    def adicionarRelacao(self, aresta):
-        self.relacoes[aresta.uid] = aresta
-
-    def encontrarRelacao(self, v2):
-        idAresta = Aresta.gerarIdAresta(self, v2)
-        if (idAresta in self.relacoes):
-            return self.relacoes[idAresta]
-        return None
+    def adicionarAresta(self, aresta):
+        self.arestas[aresta.uid] = aresta
 
     def ehVizinhoDe(self, v2):
-        return self.encontrarRelacao(v2) != None
+        return self.encontrarAresta(v2) != None
+
+    def encontrarAresta(self, v2):
+        idAresta = Aresta.gerarIdAresta(self, v2)
+        if (idAresta in self.arestas):
+            return self.arestas[idAresta]
+        return None

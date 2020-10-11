@@ -36,7 +36,7 @@ def carregarArquivo():
         if arquivo == "":
             arquivo = arquivoPadrao
 
-        g.ler(arquivo)
+        g.lerArquivo(arquivo)
         print("Arquivo " + arquivo + " carregado com sucesso.")
     except Exception as ex:
         print("Não foi possível ler o arquivo!")
@@ -77,7 +77,7 @@ def verificarSeHaAresta():
         nao = "" if haAresta else " não"
         print(f'O vértice {v}{nao} possui uma aresta para {u}')
 
-def buscaLargura():
+def buscarEmLargura():
     try:
         inicio = solicitarOpcao("Digite o numero do vertice inicial: ", 1, g.qtdVertices())
         if inicio > 0:
@@ -96,22 +96,25 @@ def mostrarGrafo():
     except Exception as ex:
         print(ex)
 
-def buscaCicloEuleriano():
+def buscarCicloEuleriano():
     try:
         print("Resultado da busca por ciclo euleriano:")
-        #result = g.novaBuscaCicloEuleriano()
-        result = g.procuraCicloEuleriano()
-        print("resultado...")
-        print(result)
+        result = g.buscarCicloEuleriano()
         g.mostrarResultadoBuscaCicloEuleriano(result)
     except Exception as ex:
         print(ex)
-    # print(result)
 
-def floydWarshall():
-    matriz = g.floydWarshall()
-    g.exibeFloydWarshall(matriz)
-    # print(matriz)
+def buscarComDijkstra():
+    v = solicitarVertice()
+    if v > 0:
+        resultado = g.buscarCaminhoMinimoComDijkstra(v)
+        for item in resultado:
+            print(f'{item[1][-1]}:', ",".join(map(str, item[1])) + "; d=" + str(item[0]))
+
+def buscarComFloydWarshall():
+    matriz = g.buscarComFloydWarshall()
+    g.exibirFloydWarshall(matriz)
+
 # lista com funcoes que serao executadas
 acoes = [
     {"texto": "Carregar um arquivo", "funcao": carregarArquivo},
@@ -122,9 +125,10 @@ acoes = [
     {"texto": "Rótulo do vértice", "funcao": verRotulo},
     {"texto": "Vizinhos do vértice", "funcao": verVizinhos},
     {"texto": "Verificar se há aresta", "funcao": verificarSeHaAresta},
-    {"texto": "Realizar busca em largura", "funcao": buscaLargura},
-    {"texto": "Procurar ciclo euleriano", "funcao": buscaCicloEuleriano},
-    {"texto": "Floyd Warshall", "funcao": floydWarshall}
+    {"texto": "Realizar busca em largura", "funcao": buscarEmLargura},
+    {"texto": "Procurar ciclo euleriano", "funcao": buscarCicloEuleriano},
+    {"texto": "Realizar busca de caminhos mínimos com Dijkstra", "funcao": buscarComDijkstra},
+    {"texto": "Floyd Warshall", "funcao": buscarComFloydWarshall}
 ]
 
 user_input = -1
