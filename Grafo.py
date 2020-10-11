@@ -2,7 +2,6 @@ from Vertice import Vertice
 from Aresta import Aresta
 from queue import Queue
 import numpy as np
-# from random import randint
 import random
 import copy
 from fibheap import *
@@ -11,9 +10,6 @@ class Grafo:
 
     def __init__(self):
         self.__reset()
-        #RETIRAR ANTES DE ENTRAGAR TRABALHO
-        self.lerArquivo("euleriano.net")
-        # self.ler("fln_pequena_ciclo.net")
 
     def __reset(self):
         self.vertices = []
@@ -229,7 +225,7 @@ class Grafo:
         for indiceVerticeInserir in range(0, self.numeroDeVertices):
             for linha in range(0, self.numeroDeVertices):
                 if linha != indiceVerticeInserir:
-                    for coluna in range(0, linha + 1):
+                    for coluna in range(0, linha):
                         x = matriz[linha][indiceVerticeInserir] + matriz[indiceVerticeInserir][coluna]
                         if x < matriz[linha][coluna]:
                             matriz[linha][coluna] = x
