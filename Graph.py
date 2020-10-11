@@ -12,7 +12,7 @@ class Graph:
         self.numOfEdges = 0
         self.loaded = False
         #RETIRAR ANTES DE ENTRAGAR TRABALHO
-        self.ler("fln_pequena_ciclo_fechado.net")
+        self.ler("fln_pequena_ciclo.net")
         # self.ler("fln_pequena_ciclo.net")
 
     def show_graph(self):
@@ -264,36 +264,45 @@ class Graph:
 
     def floydWarshall(self):
         matrizBase = self.criaMatrizAdjacenciaFloydWarshall()
+        # return matrizBase
         matriz = copy.copy(matrizBase)
-        k = 1
+        # k = 1
 
-        print(len(self.vertices))
+        # print(len(self.vertices))
         # print(range(0, len(self.vertices)-1))
         # i = 0
         # for v in self.vertices:
-        for i in range(0, len(self.vertices) - 1):
-            for linha in range(0, len(matriz) - 1):
+        for i in range(0, len(self.vertices)):
+            for linha in range(0, len(matriz)):
             # for linha from matriz:
                 if linha != i:
-                    for coluna in range(0, len(matriz[linha]) - 1):
-                        print("Vertice: "+str(i))
-                        print("linha: "+str(linha))
-                        print("coluna: "+str(coluna))
-                        print("Valor atual: "+str(matriz[linha][coluna]))
-                        print("matriz[linha][i]: "+str(matriz[linha][i]))
-                        print("matriz[i][coluna]: "+str(matriz[i][coluna]))
-                        print("Soma: "+ str(matriz[linha][i] + matriz[i][coluna]))
+                    for coluna in range(0, len(matriz[linha])):
+                        # print("Vertice: "+str(i))
+                        # print("linha: "+str(linha))
+                        # print("coluna: "+str(coluna))
+                        # print("Valor atual: "+str(matriz[linha][coluna]))
+                        # print("matriz[linha][i]: "+str(matriz[linha][i]))
+                        # print("matriz[i][coluna]: "+str(matriz[i][coluna]))
+                        # print("Soma: "+ str(matriz[linha][i] + matriz[i][coluna]))
                     # for coluna in linha:
                         x = matriz[linha][i] + matriz[i][coluna]
                         if x < matriz[linha][coluna]:
-                            print("Alterou!")
+                            # print("Alterou!")
                             matriz[linha][coluna] = x
                             matriz[coluna][linha] = x
-                        print("")
+                        # print("")
                     #     break
                     # break
-                print("")
+                # print("")
             # break
 
-
+        # print(matrizBase)
+        # print("")
         return matriz
+
+    def exibeFloydWarshall(self, matriz):
+        # print(matriz)
+        for linha in range(0, len(matriz)):
+            # print(linha)
+            print(linha +1 , end=": ")
+            print(", ".join(map(str, matriz[linha])))

@@ -70,7 +70,8 @@ def buscaCicloEuleriano():
 
 def floydWarshall():
     matriz = g.floydWarshall()
-    print(matriz)
+    g.exibeFloydWarshall(matriz)
+    # print(matriz)
 # lista com funcoes que serao executadas
 acoes = [
     {"texto": "Carregar um arquivo", "funcao": carregarArquivo},
