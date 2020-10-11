@@ -12,7 +12,7 @@ class Graph:
         self.numOfEdges = 0
         self.loaded = False
         #RETIRAR ANTES DE ENTRAGAR TRABALHO
-        self.ler("fln_pequena_ciclo.net")
+        self.ler("fln_pequena_ciclo_fechado_2.net")
         # self.ler("fln_pequena_ciclo.net")
 
     def show_graph(self):
@@ -277,6 +277,7 @@ class Graph:
             # for linha from matriz:
                 if linha != i:
                     for coluna in range(0, len(matriz[linha])):
+                    # for coluna in range(0, linha):
                         # print("Vertice: "+str(i))
                         # print("linha: "+str(linha))
                         # print("coluna: "+str(coluna))
