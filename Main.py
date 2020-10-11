@@ -1,5 +1,5 @@
 from Graph import Graph
-
+import time
 g = Graph()
 
 def solicitarOpcao(texto, min, max, maxTentativas = 3):
@@ -95,8 +95,11 @@ while user_input != 0:
     user_input = solicitarOpcao("Digite a opção desejada: ", 0, len(acoes))
     print()
     if user_input > 0:
+        inicio = time.time()
         acoes[user_input - 1]["funcao"]()
+        fim = time.time()
         print()
+        print("Tempo de execução: " + str(fim-inicio) + " segundos.")
         input('Pressione ENTER para continuar...')
     else:
         user_input = 0
