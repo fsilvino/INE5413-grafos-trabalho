@@ -11,9 +11,9 @@ class Vertice:
         self.arestas[aresta.uid] = aresta
 
     def ehVizinhoDe(self, v2):
-        return self.encontrarAresta(v2) != None
+        return self.encontrarArestaPara(v2) != None
 
-    def encontrarAresta(self, v2):
+    def encontrarArestaPara(self, v2):
         idAresta = Aresta.gerarIdAresta(self, v2)
         if (idAresta in self.arestas):
             return self.arestas[idAresta]

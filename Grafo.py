@@ -98,7 +98,7 @@ class Grafo:
 
     def peso(self, u, v):
         self.__validarSeFoiCarregado()
-        aresta = self.vertices[u - 1].encontrarAresta(self.vertices[v - 1])
+        aresta = self.vertices[u - 1].encontrarArestaPara(self.vertices[v - 1])
         return aresta.peso if aresta != None else float("inf")
 
     # Este método foi implementado seguindo o pseudocódigo disponibilizado nas anotações da disciplina.
@@ -229,7 +229,7 @@ class Grafo:
         for indiceVerticeInserir in range(0, self.numeroDeVertices):
             for linha in range(0, self.numeroDeVertices):
                 if linha != indiceVerticeInserir:
-                    for coluna in range(0, self.numeroDeVertices):
+                    for coluna in range(0, linha + 1):
                         x = matriz[linha][indiceVerticeInserir] + matriz[indiceVerticeInserir][coluna]
                         if x < matriz[linha][coluna]:
                             matriz[linha][coluna] = x
