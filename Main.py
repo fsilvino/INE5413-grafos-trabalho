@@ -1,6 +1,6 @@
-from Graph import Graph
+from Grafo import Grafo
 
-g = Graph()
+g = Grafo()
 
 def solicitarOpcao(texto, min, max, maxTentativas = 3):
     tentativas = 1
@@ -18,6 +18,17 @@ def solicitarOpcao(texto, min, max, maxTentativas = 3):
 
     return min - 1
 
+def solicitarVertice(texto="Digite o número do vertice: "):
+    try:
+        v = solicitarOpcao(texto, 1, g.qtdVertices())
+        if v > 0:
+            return v
+        else:
+            print("Você não digitou um vértice válido")
+    except Exception as ex:
+        print(ex)
+        return 0
+
 def carregarArquivo():
     arquivoPadrao = "grafo.teste.net"
     arquivo = input("Digite o nome do arquivo (em branco carrega " + arquivoPadrao + "): ")
@@ -33,12 +44,38 @@ def carregarArquivo():
 
 
 def mostrarQtdVertices():
-    qtdVertex = g.qtdVertices()
-    print("O grafo tem " + str(qtdVertex) + " vertices.")
+    numVertices = g.qtdVertices()
+    print("O grafo tem " + str(numVertices) + " vertices.")
 
 def mostrarQtdArestas():
-    qtdArestas = g.qtdArestas()
-    print("O grafo tem " + str(qtdArestas) + " arestas.")
+    numArestas = g.qtdArestas()
+    print("O grafo tem " + str(numArestas) + " arestas.")
+
+def verGrau():
+    v = solicitarVertice()
+    if v > 0:
+        grau = g.grau(v)
+        print(f'Grau do vértice {v}:', grau)
+
+def verRotulo():
+    v = solicitarVertice()
+    if v > 0:
+        rotulo = g.rotulo(v)
+        print(f'Rótulo do vértice {v}:', rotulo)
+
+def verVizinhos():
+    v = solicitarVertice()
+    if v > 0:
+        vizinhos = g.vizinhos(v)
+        print(f'Vizinhos do vértice {v}:', ", ".join(map(lambda v: str(v.numero), vizinhos)))
+
+def verificarSeHaAresta():
+    v = solicitarVertice("Digite o número do primeiro vértice: ")
+    u = solicitarVertice("Digite o número do segundo vértice: ")
+    if v > 0 and u > 0:
+        haAresta = g.haAresta(u, v)
+        nao = "" if haAresta else " não"
+        print(f'O vértice {v}{nao} possui uma aresta para {u}')
 
 def buscaLargura():
     try:
@@ -55,14 +92,17 @@ def buscaLargura():
 def mostrarGrafo():
     try:
         print('Mostrando o grafo:')
-        g.show_graph()
+        g.mostrarGrafo()
     except Exception as ex:
         print(ex)
 
 def buscaCicloEuleriano():
     try:
         print("Resultado da busca por ciclo euleriano:")
+        #result = g.novaBuscaCicloEuleriano()
         result = g.procuraCicloEuleriano()
+        print("resultado...")
+        print(result)
         g.mostrarResultadoBuscaCicloEuleriano(result)
     except Exception as ex:
         print(ex)
@@ -78,6 +118,10 @@ acoes = [
     {"texto": "Mostrar o grafo", "funcao": mostrarGrafo},
     {"texto": "Ver a quantidade de Vértices", "funcao": mostrarQtdVertices},
     {"texto": "Ver a quantidade de Arestas", "funcao": mostrarQtdArestas},
+    {"texto": "Grau do vértice", "funcao": verGrau},
+    {"texto": "Rótulo do vértice", "funcao": verRotulo},
+    {"texto": "Vizinhos do vértice", "funcao": verVizinhos},
+    {"texto": "Verificar se há aresta", "funcao": verificarSeHaAresta},
     {"texto": "Realizar busca em largura", "funcao": buscaLargura},
     {"texto": "Procurar ciclo euleriano", "funcao": buscaCicloEuleriano},
     {"texto": "Floyd Warshall", "funcao": floydWarshall}

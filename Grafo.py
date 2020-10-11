@@ -1,104 +1,105 @@
-from Vertex import Vertex
+from Vertice import Vertice
+from Aresta import Aresta
 from queue import Queue
+import numpy as np
 # from random import randint
 import random
 import copy
+from fibheap import *
 
-class Graph:
+class Grafo:
 
     def __init__(self):
-        self.vertices = []
-        self.numOfVertices = 0
-        self.numOfEdges = 0
-        self.loaded = False
+        self.__reset()
         #RETIRAR ANTES DE ENTRAGAR TRABALHO
-        self.ler("fln_pequena_ciclo.net")
+        self.ler("euleriano.net")
         # self.ler("fln_pequena_ciclo.net")
 
-    def show_graph(self):
-        for v in self.vertices:
-            print(str(v.number) + ": " + ", ".join(map(lambda x: str(x.number), v.relationships)))
+    def __reset(self):
+        self.vertices = []
+        self.numeroDeVertices = 0
+        self.numeroDeArestas = 0
+        self.carregado = False
 
-    def isLoaded(self):
-        return self.loaded
+    def mostrarGrafo(self):
+        for v in self.vertices:
+            print(str(v.numero) + ": " + ", ".join(map(lambda r: str(r.obterOutraParte(v).numero), v.relacoes.values())))
+
+    def estaCarregado(self):
+        return self.carregado
 
     def ler(self, arquivo):
+        self.__reset()
         f = open(arquivo, "r", encoding='utf-8')
-        lines = f.readlines()
+        linhas = f.readlines()
         f.close()
-        self.loadVertices(lines)
-        self.loadRelationships(lines)
-        self.fileLoaded = True
+        self.__lerVertices(linhas)
+        self.__lerRelacoes(linhas)
+        self.carregado = True
 
 
-    def loadVertices(self, lines):
-        self.vertices.clear()
-        self.numOfVertices = int(lines[0].split(" ")[1])
-        for i in range(1, self.numOfVertices + 1):
-            line = lines[i]
-            spaceIndex = line.index(" ")
-            vertexNumber = int(line[0:spaceIndex])
-            startIndex = spaceIndex + 2
-            endIndex = len(line)-2
-            label = line[startIndex:endIndex]
-            self.vertices.append(Vertex(vertexNumber, label))
+    def __lerVertices(self, linhas):
+        self.numeroDeVertices = int(linhas[0].split(" ")[1])
+        for i in range(1, self.numeroDeVertices + 1):
+            linha = linhas[i]
+            posicaoEspaco = linha.index(" ")
+            numeroVertice = int(linha[0:posicaoEspaco])
+            posicaoInicioRotulo = posicaoEspaco + 2
+            posicaoFimRotulo = len(linha) - 2
+            rotulo = linha[posicaoInicioRotulo:posicaoFimRotulo]
+            self.vertices.append(Vertice(numeroVertice, rotulo))
 
 
-    def loadRelationships(self, lines):
-        self.numOfEdges = 0
-        for i in range(self.numOfVertices + 2, len(lines)):
-            values = lines[i].split(" ")
+    def __lerRelacoes(self, linhas):
+        self.numeroDeArestas = 0
+        for i in range(self.numeroDeVertices + 2, len(linhas)):
+            valores = linhas[i].split(" ")
 
-            originVertex = self.vertices[int(values[0]) - 1]
-            destinationVertex = self.vertices[int(values[1]) - 1]
-            weight = 1
-            if (len(values) >= 3):
-                weight = float(values[2])
+            v1 = self.vertices[int(valores[0]) - 1]
+            v2 = self.vertices[int(valores[1]) - 1]
+            peso = 1
+            if (len(valores) >= 3):
+                peso = float(valores[2])
 
-            # nesse caso, self.numOfEdges esta sendo usado como identificador unico do relacionamento
-            originVertex.addRelationship(destinationVertex, weight, self.numOfEdges)
-            destinationVertex.addRelationship(originVertex, weight, self.numOfEdges)
+            # visando economizar memória, por ser um grafo não dirigido,
+            # criamos uma única vez a representação da relação e adicionamos ela
+            # em ambos os vértices
+            aresta = Aresta(v1, v2, peso)
+            v1.adicionarRelacao(aresta)
+            v2.adicionarRelacao(aresta)
 
-            self.numOfEdges = self.numOfEdges + 1
+            self.numeroDeArestas = self.numeroDeArestas + 1
 
     def qtdVertices(self):
-        return self.numOfVertices
+        return self.numeroDeVertices
 
     def qtdArestas(self):
-        return self.numOfEdges
+        return self.numeroDeArestas
 
     def grau(self, v):
-        return len(self.vertices[v-1].relationships)
+        return len(self.vertices[v - 1].relacoes)
 
     def rotulo(self, v):
-        return self.vertices[v-1].label
+        return self.vertices[v - 1].rotulo
 
     def vizinhos(self, v):
-        return self.vertices[v-1].relationships
+        vertice = self.vertices[v - 1]
+        return list(map(lambda r: r.obterOutraParte(vertice), vertice.relacoes.values()))
 
     def haAresta(self, u, v):
-        return self.vertices[u-1].isNeighborOf(v) or self.vertices[v-1].isNeighborOf(u)
-
+        return self.vertices[u - 1].ehVizinhoDe(self.vertices[v - 1])
 
     def peso(self, u, v):
-        relationship = self.vertices[u-1].findRelationship(v)
-        if (relationship != None):
-            return relationship.weight
-
-        relationship = self.vertices[v-1].findRelationship(u)
-        if (relationship != None):
-            return relationship.weight
-
-        return float("inf")
+        relacao = self.vertices[u - 1].encontrarRelacao(self.vertices[v - 1])
+        return relacao.peso if relacao != None else float("inf")
 
     # Este método foi implementado seguindo o pseudocódigo disponibilizado nas anotações da disciplina.
     # Mesmo não utilizando a estrutura de ancestrais para efeitos práticos, a mesma foi adicionada para uma implementação completa do exemplo
     def realizarBuscaEmLargura(self, s):
         # utiliza o número de vértices para inicializar os itens dos arrays com os valores default
-        numVertices = self.qtdVertices()
-        visitados = [False] * numVertices
-        custos = [float("inf")] * numVertices
-        ancestrais = [None] * numVertices
+        visitados = [False] * self.numeroDeVertices
+        custos = [float("inf")] * self.numeroDeVertices
+        ancestrais = [None] * self.numeroDeVertices
 
         # define os valores para o vértice inicial
         visitados[s - 1] = True
@@ -118,7 +119,7 @@ class Graph:
             for verticeDestino in self.vizinhos(u + 1):
 
                 # passa por cada vizinho e verifica se o mesmo ainda não foi visitado
-                v = verticeDestino.number - 1
+                v = verticeDestino.numero - 1
                 if not visitados[v]:
 
                     # marca o vizinho como visitado, calcula seu custo e seta seu ancestral
@@ -144,21 +145,22 @@ class Graph:
 
     # Procura de ciclos eulerianos utilizando algoritmo de Hierholzer
     def procuraCicloEuleriano(self):
-        arestasVisitadas = [False] * self.qtdArestas()
+        arestasVisitadas = [False] * self.numeroDeArestas
         # posicao inicial escolhida arbitrariamente
-        posicaoInicial = random.randint(0, self.qtdVertices()-1)
+        posicaoInicial = random.randint(0, self.numeroDeVertices - 1)
         verticeInicial = self.vertices[posicaoInicial]
 
         # print("Vertice inicial:", end="")
-        # print(verticeInicial.number)
+        # print(verticeInicial.numero)
 
         ciclo = self.buscaSubcicloEuleriano(verticeInicial, arestasVisitadas)
         return ciclo
+
         print("")
         print("Resultado: ")
         if ciclo[0]:
             for vertice in ciclo[1]:
-                print(vertice.number, end=", ")
+                print(vertice.numero, end=", ")
         else:
             print("Retornou nulo")
         print("")
@@ -169,7 +171,7 @@ class Graph:
     def buscaSubcicloEuleriano(self, v, arestasVisitadas):
         ciclo = []
         ciclo.append(v)
-        t =v # variavel t serve como comparativo para saber se um ciclo foi fechado ou nao
+        t = v # variavel t serve como comparativo para saber se um ciclo foi fechado ou nao
         # procurar maneira de fazer do/while
         busca = True
         while(busca):
@@ -177,8 +179,8 @@ class Graph:
             #     return (False, None)
             # else:
             # array com vertices que tem relacao com o vertice atual, ou seja, que tem arestas relacionadas
-            listaVerticesDestino = list(v.relationships.keys())
-
+            listaVerticesDestino = list(map(lambda r: r.obterOutraParte(v), v.relacoes.values()))
+            
             # escolher chave que nao foi visitada
             keysArestasNaoVisitadas = self.buscaArestasNaoVistadas(listaVerticesDestino, arestasVisitadas, v)
 
@@ -190,13 +192,13 @@ class Graph:
                 randomKey = random.choice(keysArestasNaoVisitadas)
                 verticeDestinoKey = listaVerticesDestino[randomKey] # verticeDestinoKey eh do tipo Vertex
 
-                u = v.relationships[verticeDestinoKey] #proxima aresta a ser visitada
+                r = v.relacoes[verticeDestinoKey] #proxima aresta a ser visitada
                 # marca aresta como vistitada
-                arestasVisitadas[u.uid] = True
-                #v recebe vertice da outra ponta da aresta
-                v= u.destinationVertex
+                arestasVisitadas[r.uid] = True
+                # v recebe vertice da outra ponta da aresta
+                v = r.obterOutraParte(v)
                 # ciclo recebe novo vertice
-                ciclo.append(u.destinationVertex)
+                ciclo.append(v)
             # verificacao para definir fim do loop, emulando um "do while"
             if(v == t):
                 busca = False
@@ -205,9 +207,9 @@ class Graph:
         # para cada vertice no ciclo, verificar se existe aresta nao vistitada
         i = 0
         for vertice in ciclo:
-            for relacao in vertice.relationships:
+            for relacao in vertice.relacoes:
                 # print("Passou aqui")
-                if not arestasVisitadas[vertice.relationships[relacao].uid]:
+                if not arestasVisitadas[vertice.relacoes[relacao].uid]:
                     subCiclo = self.buscaSubcicloEuleriano(vertice, arestasVisitadas)
                     if not subCiclo[0]:
                         return (False,None)
@@ -230,35 +232,85 @@ class Graph:
         keysNaoVisitadas = []
         keyNaoVistida = 0
         for verticeDestino in listaVerticesDestino:
-            if not arestasVisitadas[vertice.relationships[verticeDestino].uid]:
+            if not arestasVisitadas[Aresta.gerarIdAresta(vertice, verticeDestino)]:
                 keysNaoVisitadas.append(keyNaoVistida)
-            keyNaoVistida = keyNaoVistida+1
+            keyNaoVistida = keyNaoVistida + 1
         return keysNaoVisitadas
 
     def mostrarResultadoBuscaCicloEuleriano(self, resultado):
 
         if resultado[0]:
             print("1")
-            print(", ".join(map(lambda vertice: str(vertice.number), resultado[1])))
+            print(resultado)
+            print(", ".join(map(lambda vertice: str(vertice.numero), resultado[1])))
             # for vertice in resultado[1]:
             #     print(vertice.number, end=", ")
         else:
             print("0")
 
 
+
+    def novaBuscaCicloEuleriano(self):
+        posicaoInicial = random.randint(0, self.numeroDeVertices - 1)
+        verticeInicial = self.vertices[posicaoInicial]
+        arestasVisitadas = {}
+
+        ciclo = self.__novaBuscaSubcicloEuleriano(verticeInicial, arestasVisitadas)
+
+        if (not ciclo[0]) or (len(arestasVisitadas) != self.numeroDeArestas):
+            return (False, None)
+        else:
+            return ciclo
+
+    def __novaBuscaSubcicloEuleriano(self, vertice, arestasVisitadas):
+        ciclo = [vertice]
+        t = vertice
+        parar = False
+        while (not parar):
+            arestasNaoVisitadas = self.__novaBuscarPorArestasNaoVisitadas(vertice, arestasVisitadas)
+
+            if not arestasNaoVisitadas:
+                return (False, None)
+            else:
+                arestaVisitar = random.choice(arestasNaoVisitadas)
+                arestasVisitadas[arestaVisitar] = True
+                vertice = vertice.relacoes[arestaVisitar].obterOutraParte(vertice)
+                ciclo.append(vertice) 
+
+            if (t == vertice):
+                parar = True
+
+        for (i, vertice) in enumerate(ciclo):
+            arestasNaoVisitadas = self.__novaBuscarPorArestasNaoVisitadas(vertice, arestasVisitadas)
+            if arestasNaoVisitadas:
+                subciclo = self.__novaBuscaSubcicloEuleriano(vertice, arestasVisitadas)
+                if not subciclo[0]:
+                    return (False, None)
+                ciclo[i:i+1] = subciclo[1]
+
+        return (True, ciclo)
+
+    def __novaBuscarPorArestasNaoVisitadas(self, vertice, arestasVisitadas):
+        naoVisitadas = []
+        for aresta in vertice.relacoes.values():
+            if not (aresta.uid in arestasVisitadas):
+                naoVisitadas.append(aresta.uid)
+        return naoVisitadas
+
+
     # matriz de adjacencia Floyd-Warshal
     # para para cruzamento de mesmo vertice, colocar zero, para vertices que nao estao ligados, colocar infinito
     def criaMatrizAdjacenciaFloydWarshall(self):
         # matriz = [[0] * * self.qtdVertices()] * self.qtdVertices() # Nao funciona bem. Arrays internos funcionam como objeto, sempre todos sao alterados
-        matriz = [0] * self.qtdVertices()
+        matriz = [0] * self.numeroDeVertices
         # matriz[0][0] = 78
         # matriz = []
         i = 0
         for vertice in self.vertices:
-            matriz[i] = [float("inf")] * self.qtdVertices()
+            matriz[i] = [float("inf")] * self.numeroDeVertices
             matriz[i][i] = float(0)
-            for verticeDestino in vertice.relationships:
-                matriz[vertice.number- 1][verticeDestino.number -1 ] =  vertice.relationships[verticeDestino].weight
+            for verticeDestino in vertice.relacoes:
+                matriz[vertice.numero - 1][verticeDestino.numero - 1] =  vertice.relacoes[verticeDestino].peso
             i += 1
         return matriz
 
@@ -306,3 +358,38 @@ class Graph:
             # print(linha)
             print(linha +1 , end=": ")
             print(", ".join(map(str, matriz[linha])))
+
+
+    def dijkstra(self, s):
+        # utiliza o número de vértices para inicializar os itens dos arrays com os valores default
+        heap = makefheap()
+        ancestrais = [None] * self.numeroDeVertices
+        custos = [float("inf")] * self.numeroDeVertices
+
+        # define os valores para o vértice inicial
+        custos[s - 1] = 0
+        fheappush(heap, (0, s - 1))
+        
+        while heap.num_nodes:
+            item = fheappop(heap)
+            custo_u = item[0]
+            u = item[1]
+
+            # se o custo do heap é diferente do custo que já está no array, é porque
+            # o vértice já foi encontrado antes
+            if custo_u != custos[u]:
+                continue
+
+            # o método vizinhos() recebe o número do vértice, portando precisa somar 1 ao índice do array
+            for aresta in self.vertices[u].relacoes:
+                v = aresta.obterOutraParte(self.vertices[u]).numero - 1
+                
+                custo = custos[u] + aresta.weight
+                if custos[v] > custo:
+                    custos[v] = custo
+                    ancestrais[v] = u
+
+                    # adiciona o vértice na fila para visitar seus vizinhos
+                    fheappush(heap, (custo, v))
+
+        return ancestrais
