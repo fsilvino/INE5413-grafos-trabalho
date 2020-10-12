@@ -8,6 +8,7 @@ class Grafo:
 
     def __init__(self):
         self.__reset()
+        self.lerArquivo("agm_tiny.net")
 
     def __reset(self):
         self.vertices = []
@@ -266,6 +267,7 @@ class Grafo:
                 custo = caminhos[u][0] + aresta.peso
                 if caminhos[v][0] > custo:
                     caminhos[v][0] = custo
+                    caminhos[v][1] = []
                     caminhos[v][1].extend(caminhos[u][1])
                     caminhos[v][1].append(v + 1)
 
