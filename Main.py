@@ -1,6 +1,6 @@
-from Graph import Graph
-import time
-g = Graph()
+from Grafo import Grafo
+
+g = Grafo()
 
 def solicitarOpcao(texto, min, max, maxTentativas = 3):
     tentativas = 1
@@ -18,6 +18,17 @@ def solicitarOpcao(texto, min, max, maxTentativas = 3):
 
     return min - 1
 
+def solicitarVertice(texto="Digite o número do vertice: "):
+    try:
+        v = solicitarOpcao(texto, 1, g.qtdVertices())
+        if v > 0:
+            return v
+        else:
+            print("Você não digitou um vértice válido")
+    except Exception as ex:
+        print(ex)
+        return 0
+
 def carregarArquivo():
     arquivoPadrao = "grafo.teste.net"
     arquivo = input("Digite o nome do arquivo (em branco carrega " + arquivoPadrao + "): ")
@@ -25,7 +36,7 @@ def carregarArquivo():
         if arquivo == "":
             arquivo = arquivoPadrao
 
-        g.ler(arquivo)
+        g.lerArquivo(arquivo)
         print("Arquivo " + arquivo + " carregado com sucesso.")
     except Exception as ex:
         print("Não foi possível ler o arquivo!")
@@ -33,14 +44,40 @@ def carregarArquivo():
 
 
 def mostrarQtdVertices():
-    qtdVertex = g.qtdVertices()
-    print("O grafo tem " + str(qtdVertex) + " vertices.")
+    numVertices = g.qtdVertices()
+    print("O grafo tem " + str(numVertices) + " vertices.")
 
 def mostrarQtdArestas():
-    qtdArestas = g.qtdArestas()
-    print("O grafo tem " + str(qtdArestas) + " arestas.")
+    numArestas = g.qtdArestas()
+    print("O grafo tem " + str(numArestas) + " arestas.")
 
-def buscaLargura():
+def verGrau():
+    v = solicitarVertice()
+    if v > 0:
+        grau = g.grau(v)
+        print(f'Grau do vértice {v}:', grau)
+
+def verRotulo():
+    v = solicitarVertice()
+    if v > 0:
+        rotulo = g.rotulo(v)
+        print(f'Rótulo do vértice {v}:', rotulo)
+
+def verVizinhos():
+    v = solicitarVertice()
+    if v > 0:
+        vizinhos = g.vizinhos(v)
+        print(f'Vizinhos do vértice {v}:', ", ".join(map(lambda v: str(v.numero), vizinhos)))
+
+def verificarSeHaAresta():
+    v = solicitarVertice("Digite o número do primeiro vértice: ")
+    u = solicitarVertice("Digite o número do segundo vértice: ")
+    if v > 0 and u > 0:
+        haAresta = g.haAresta(u, v)
+        nao = "" if haAresta else " não"
+        print(f'O vértice {v}{nao} possui uma aresta para {u}')
+
+def buscarEmLargura():
     try:
         inicio = solicitarOpcao("Digite o numero do vertice inicial: ", 1, g.qtdVertices())
         if inicio > 0:
@@ -55,32 +92,43 @@ def buscaLargura():
 def mostrarGrafo():
     try:
         print('Mostrando o grafo:')
-        g.show_graph()
+        g.mostrarGrafo()
     except Exception as ex:
         print(ex)
 
-def buscaCicloEuleriano():
+def buscarCicloEuleriano():
     try:
         print("Resultado da busca por ciclo euleriano:")
-        result = g.procuraCicloEuleriano()
+        result = g.buscarCicloEuleriano()
         g.mostrarResultadoBuscaCicloEuleriano(result)
     except Exception as ex:
         print(ex)
-    # print(result)
 
-def floydWarshall():
-    matriz = g.floydWarshall()
-    g.exibeFloydWarshall(matriz)
-    # print(matriz)
+def buscarComDijkstra():
+    v = solicitarVertice()
+    if v > 0:
+        resultado = g.buscarCaminhoMinimoComDijkstra(v)
+        for item in resultado:
+            print(f'{item[1][-1]}:', ",".join(map(str, item[1])) + "; d=" + str(item[0]))
+
+def buscarComFloydWarshall():
+    matriz = g.buscarComFloydWarshall()
+    g.exibirFloydWarshall(matriz)
+
 # lista com funcoes que serao executadas
 acoes = [
     {"texto": "Carregar um arquivo", "funcao": carregarArquivo},
     {"texto": "Mostrar o grafo", "funcao": mostrarGrafo},
     {"texto": "Ver a quantidade de Vértices", "funcao": mostrarQtdVertices},
     {"texto": "Ver a quantidade de Arestas", "funcao": mostrarQtdArestas},
-    {"texto": "Realizar busca em largura", "funcao": buscaLargura},
-    {"texto": "Procurar ciclo euleriano", "funcao": buscaCicloEuleriano},
-    {"texto": "Floyd Warshall", "funcao": floydWarshall}
+    {"texto": "Grau do vértice", "funcao": verGrau},
+    {"texto": "Rótulo do vértice", "funcao": verRotulo},
+    {"texto": "Vizinhos do vértice", "funcao": verVizinhos},
+    {"texto": "Verificar se há aresta", "funcao": verificarSeHaAresta},
+    {"texto": "Realizar busca em largura", "funcao": buscarEmLargura},
+    {"texto": "Procurar ciclo euleriano", "funcao": buscarCicloEuleriano},
+    {"texto": "Realizar busca de caminhos mínimos com Dijkstra", "funcao": buscarComDijkstra},
+    {"texto": "Floyd Warshall", "funcao": buscarComFloydWarshall}
 ]
 
 user_input = -1
@@ -95,11 +143,8 @@ while user_input != 0:
     user_input = solicitarOpcao("Digite a opção desejada: ", 0, len(acoes))
     print()
     if user_input > 0:
-        inicio = time.time()
         acoes[user_input - 1]["funcao"]()
-        fim = time.time()
         print()
-        print("Tempo de execução: " + str(fim-inicio) + " segundos.")
         input('Pressione ENTER para continuar...')
     else:
         user_input = 0
